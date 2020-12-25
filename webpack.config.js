@@ -6,7 +6,7 @@ let OptimizeCssWebpackPlugin = require('optimize-css-assets-webpack-plugin')
 let uglifyjsWebpackPlugin = require('uglifyjs-webpack-plugin')
 let {CleanWebpackPlugin} = require('clean-webpack-plugin')
 let webpack =require('webpack')
-
+//懒加载 
 module.exports = {
     mode:"production",//development production
     entry:{// 多入口是对象
@@ -28,6 +28,7 @@ module.exports = {
     },
     devServer:{//服务器配置
         port:3000,
+        hot:true,
         progress:true,
         contentBase:'./dist',
         // compress:true
@@ -46,6 +47,8 @@ module.exports = {
         new CleanWebpackPlugin({
             cleanAfterEveryBuildPatterns: ['./dist']
         }),
+        // new webpack.NormalModuleReplacementPlugin(),
+        new webpack.HotModuleReplacementPlugin(),
         new HtmlWebpackPlugin(
             {
                 template:'./src/index.html',
@@ -67,6 +70,22 @@ module.exports = {
         'jquery':'$'
     },
     optimization:{//优化
+        // splitChunks:{//抽离分割代码块
+        //     cacheGroups:{//缓存组
+        //         common:{//公共模块
+        //             chunks:'initial',
+        //             minSize:0,//大小
+        //             minChunks:2,//次数
+        //         },
+        //         verdor:{
+        //             priority:1,
+        //             test:/node_modules/,
+        //             chunks:'initial',
+        //             minSize:0,//大小
+        //             minChunks:2,//次数
+        //         }
+        //     }
+        // },
         minimizer:[
             new OptimizeCssWebpackPlugin(),
             new uglifyjsWebpackPlugin(
@@ -119,11 +138,12 @@ module.exports = {
             //规则 css loader-@import  style-loader 插入head ,  顺序右-左 sass stylus
             {
             test:/\.css$/, 
-            use:[
-            MiniCssExtractPlugin.loader,
-            'css-loader',
-            'postcss-loader',
-            ]},
+                use:[
+                    MiniCssExtractPlugin.loader,
+                    'css-loader',
+                    'postcss-loader',
+                ]
+            },
             {
                 test:/\.less$/, 
             use:[
